@@ -3,9 +3,11 @@ package dev.vitor.url.mapper;
 import dev.vitor.url.dtos.UrlRequestDto;
 import dev.vitor.url.dtos.UrlResponseDto;
 import dev.vitor.url.entities.Url;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class UrlMapper {
 
     public Url toEntity(UrlRequestDto request) {
@@ -24,7 +26,7 @@ public class UrlMapper {
         response.setShortUrl(url.getShortUrl());
         response.setDefaultUrl(url.getDefaultUrl());
         response.setCreatedAt(url.getCreatedAt());
-        response.setExpireAt(url.getExpireAt());
+        response.setExpireAt(url.getExpireAt().plusMinutes(3));
 
         return response;
     }

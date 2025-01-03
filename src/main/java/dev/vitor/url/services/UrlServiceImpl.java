@@ -4,14 +4,18 @@ import dev.vitor.url.dtos.UrlRequestDto;
 import dev.vitor.url.dtos.UrlResponseDto;
 import dev.vitor.url.entities.Url;
 import dev.vitor.url.exceptions.UrlNotFoundException;
-import dev.vitor.url.intefaces.UrlService;
+import dev.vitor.url.interfaces.UrlService;
 import dev.vitor.url.mapper.UrlMapper;
 import dev.vitor.url.repository.UrlRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
+@Service
 public class UrlServiceImpl implements UrlService {
 
     private final UrlRepository urlRepository;
@@ -24,7 +28,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public UrlResponseDto createShortenerUrl(UrlRequestDto request) {
+    public UrlResponseDto createShortenerUrl(@NotNull UrlRequestDto request) {
 
         var url = new Url();
         url.setDefaultUrl(request.getDefaultUrl());
@@ -40,13 +44,13 @@ public class UrlServiceImpl implements UrlService {
     }
 
     @Override
-    public Url getDefaultUrl(UrlRequestDto requestDto) {
-        var url = urlRepository
-                .findByDefaultUrl(requestDto.getDefaultUrl())
-                .orElseThrow(
-                        () -> new UrlNotFoundException("Url not found, verify the request", HttpStatus.NOT_FOUND)
-                );
-        return url;
+    public Url getDefaultUrl(String shortUrl) {
+        Optional<Url> url = urlRepository.findByShortUrl(shortUrl);
+        if (url.isEmpty())
+            throw new UrlNotFoundException
+                    ("Url not found, verify the request",
+                            HttpStatus.NOT_FOUND);
+        return url.get();
     }
 
     private String generateShortUrl() {

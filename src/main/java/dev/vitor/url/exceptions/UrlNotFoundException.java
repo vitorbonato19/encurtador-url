@@ -15,5 +15,5 @@ public class UrlNotFoundException extends RuntimeException {
     public HttpStatus getStatus() {
         return status;
     }
-    
+
 }
